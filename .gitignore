@@ -1,0 +1,24 @@
+# Python cache and temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+
+# Local sensitive configuration (contains Gemini API key)
+data/config.json
+
+# Local SQLite databases (created automatically on first launch)
+data/*.db
+data/*.db-journal
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Match screenshot captures
+Desktop/
+Matches/
+*.png
+*.jpg
+*.jpeg

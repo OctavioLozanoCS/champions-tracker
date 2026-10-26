@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon Champions - Matchup & Stats Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="pokeball-icon">
+          <div class="pokeball-top"></div>
+          <div class="pokeball-center"></div>
+          <div class="pokeball-bottom"></div>
+        </div>
+        <div>
+          <h1>Pokémon Champions</h1>
+          <span class="subtitle">Matchup & Battle Intelligence Tracker</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <!-- Separate Window Selection Button -->
+        <button class="btn btn-window" id="selectWindowBtn" title="Choose the game window to capture">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span id="windowBtnText">🔗 Select Game Window</span>
+        </button>
+
+        <!-- Dedicated Separate SNAP Button (Fast 1-Click) -->
+        <button class="btn btn-snap-direct" id="snapDirectBtn" title="Instantly snap screenshot and auto-detect (Hotkey: F8)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          ⚡ SNAP SCREENSHOT
+        </button>
+
+        <button class="btn btn-secondary" id="refreshBtn" title="Refresh Data">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/></svg>
+          Refresh
+        </button>
+        <button class="btn btn-secondary" id="openSettingsBtn" title="Configure AI Auto-Detection">
+          ⚙️ Settings
+        </button>
+        <button class="btn btn-secondary" id="exportBtn" title="Export Match Data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Export
+        </button>
+        <button class="btn btn-primary" id="openModalBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          + Log Match
+        </button>
+      </div>
+    </header>
+
+    <!-- Sessions Control Bar -->
+    <div class="session-bar">
+      <div class="session-left">
+        <span class="session-label">📁 Session:</span>
+        <select id="sessionSelect" class="session-dropdown">
+          <!-- Populated by JS -->
+        </select>
+        <button class="btn btn-sm btn-secondary" id="newSessionBtn" title="Start a fresh match session">+ New Session</button>
+        <button class="btn btn-sm btn-danger" id="clearSessionBtn" title="Clear/wipe all matches in this session">🧹 Clear History</button>
+        <button class="btn btn-sm btn-secondary" id="manageSessionsBtn" title="Manage all sessions">Manage</button>
+      </div>
+      <div class="session-right">
+        <span class="session-stat-pill" id="sessionSummaryPill">Session Record: 0W - 0L</span>
+      </div>
+    </div>
+
+    <!-- Hidden Video / Canvas for Window Capture -->
+    <div style="display: none;">
+      <video id="captureVideo" autoplay muted playsinline></video>
+      <canvas id="captureCanvas"></canvas>
+    </div>
+
+    <!-- Active Window Linked Banner (Slim) -->
+    <div class="window-active-pill" id="windowActivePill" style="display: none;">
+      <span class="pulse-dot"></span>
+      <span id="windowActiveName">Game Window Connected</span>
+      <button type="button" id="disconnectWindowBtn" class="btn-link" style="color: #fca5a5; margin-left: 8px;">(Disconnect)</button>
+    </div>
+
+    <!-- Filter Format Tabs -->
+    <div class="filter-bar">
+      <div class="tabs" id="formatTabs">
+        <button class="tab active" data-format="all">All Formats</button>
+        <button class="tab" data-format="Ranked Doubles">Ranked Doubles</button>
+        <button class="tab" data-format="Ranked Singles">Ranked Singles</button>
+        <button class="tab" data-format="Casual">Casual</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by Pokémon or Opponent...">
+      </div>
+    </div>
+
+    <!-- Top KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Total Battles</span>
+        <div class="kpi-value" id="kpiTotal">0</div>
+        <div class="kpi-sub" id="kpiRecord">0W - 0L</div>
+      </div>
+      <div class="kpi-card highlight">
+        <span class="kpi-label">Win Rate</span>
+        <div class="kpi-value text-accent" id="kpiWinRate">0.0%</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="winRateBar" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Wins</span>
+        <div class="kpi-value text-win" id="kpiWins">0</div>
+        <div class="kpi-sub">Total Victories</div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Losses</span>
+        <div class="kpi-value text-loss" id="kpiLosses">0</div>
+        <div class="kpi-sub">Total Defeats</div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Current Streak</span>
+        <div class="kpi-value" id="kpiStreak">-</div>
+        <div class="kpi-sub" id="streakLabel">Consecutive</div>
+      </div>
+    </section>
+
+    <!-- Matchup Intelligence Section (2 Columns) -->
+    <div class="intel-grid">
+      <!-- Opponent Threat Matrix -->
+      <section class="intel-card">
+        <div class="card-header">
+          <div>
+            <h2>Matchups vs Opponent Pokémon</h2>
+            <span class="card-sub">Win rate against specific threats in this session</span>
+          </div>
+          <input type="text" id="oppFilterInput" class="intel-search" placeholder="Filter threat...">
+        </div>
+        <div class="table-container">
+          <table class="intel-table" id="oppTable">
+            <thead>
+              <tr>
+                <th>Pokémon</th>
+                <th>Win Rate</th>
+                <th>Record (W - L)</th>
+                <th>Total Faced</th>
+              </tr>
+            </thead>
+            <tbody id="oppMatchupsBody">
+              <tr><td colspan="4" class="empty-state">No matchups logged yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- My Pokémon Performance -->
+      <section class="intel-card">
+        <div class="card-header">
+          <div>
+            <h2>My Team Performance</h2>
+            <span class="card-sub">Effectiveness when bringing each Pokémon</span>
+          </div>
+          <input type="text" id="myFilterInput" class="intel-search" placeholder="Filter my team...">
+        </div>
+        <div class="table-container">
+          <table class="intel-table" id="myTable">
+            <thead>
+              <tr>
+                <th>Pokémon</th>
+                <th>Win Rate</th>
+                <th>Record (W - L)</th>
+                <th>Times Brought</th>
+              </tr>
+            </thead>
+            <tbody id="myPerfBody">
+              <tr><td colspan="4" class="empty-state">No Pokémon records logged yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Match History Log -->
+    <section class="history-section">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2>Battle History</h2>
+          <span class="section-sub">Matches in selected session</span>
+        </div>
+        <div id="sessionHistoryBadge" class="session-history-tag">Session 1</div>
+      </div>
+      <div class="match-list" id="matchList">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Add Match Modal -->
+  <div class="modal-backdrop" id="matchModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Log New Battle</h3>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+
+      <!-- Auto-detect Live Status Banner -->
+      <div id="autoDetectBanner" class="auto-detect-banner" style="display: none;">
+        <span class="pulse-dot"></span>
+        <span id="autoDetectText">Scanning screenshot with Gemini Flash...</span>
+      </div>
+      
+      <!-- Captured Image Preview inside modal -->
+      <div id="modalScreenshotPreview" class="screenshot-preview-banner" style="display: none;">
+        <img id="previewImg" src="" alt="Captured Screenshot">
+        <div class="preview-info">
+          <span class="badge-saved">✓ Saved to Desktop\Matches</span>
+          <span id="previewFilename" class="preview-filename"></span>
+          <button type="button" id="retryDetectBtn" class="btn-link" style="margin-top: 4px; text-align: left;">⚡ Re-scan with Vision AI</button>
+        </div>
+      </div>
+
+      <form id="matchForm">
+        <input type="hidden" id="editMatchId" value="">
+        
+        <!-- Result Selector -->
+        <div class="form-group">
+          <label>Battle Result *</label>
+          <div class="result-toggle">
+            <button type="button" class="btn-toggle win active" data-result="WIN">WIN</button>
+            <button type="button" class="btn-toggle loss" data-result="LOSS">LOSS</button>
+            <button type="button" class="btn-toggle draw" data-result="DRAW">DRAW</button>
+          </div>
+          <input type="hidden" id="matchResult" value="WIN">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="matchFormat">Format</label>
+            <select id="matchFormat">
+              <option value="Ranked Doubles">Ranked Doubles (VGC)</option>
+              <option value="Ranked Singles">Ranked Singles</option>
+              <option value="Casual">Casual</option>
+              <option value="Private">Private / Friendly</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="matchTier">Rank / Tier</label>
+            <input type="text" id="matchTier" placeholder="e.g. Master Ball, Tier 8">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="matchOpponent">Opponent Name</label>
+            <input type="text" id="matchOpponent" placeholder="Trainer name">
+          </div>
+          <div class="form-group">
+            <label for="matchScore">Score / Remaining</label>
+            <input type="text" id="matchScore" placeholder="e.g. 4-0, 2-0">
+          </div>
+        </div>
+
+        <!-- 1-Click Roster Selector -->
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="margin: 0;">My Team Brought <span class="help-text">(Click 4 brought)</span></label>
+            <button type="button" id="editRosterBtn" class="btn-link">Edit 6-Roster</button>
+          </div>
+          <div class="roster-chips" id="rosterChips">
+            <!-- Rendered by JS -->
+          </div>
+          <input type="hidden" id="myTeamInput" required>
+        </div>
+
+        <!-- Opponent Team with Smart Fast Autocomplete & Chips -->
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="margin: 0;">Opponent Pokémon Faced *</label>
+            <button type="button" id="clearOppBtn" class="btn-link">Clear</button>
+          </div>
+          
+          <div class="opp-chips" id="oppChips">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <input type="text" id="oppQuickInput" list="pokemonDatalist" placeholder="Type 2 letters (e.g. 'sw', 'gh', 'in') & press Enter...">
+            <button type="button" class="btn btn-secondary" id="addOppBtn" style="white-space: nowrap;">+ Add</button>
+          </div>
+          <datalist id="pokemonDatalist"></datalist>
+          <input type="hidden" id="oppTeamInput" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="matchMvp">MVP Pokémon</label>
+            <input type="text" id="matchMvp" placeholder="Your match MVP">
+          </div>
+          <div class="form-group">
+            <label for="matchSource">Entry Source</label>
+            <select id="matchSource">
+              <option value="screenshot">Screenshot / In-App Snap</option>
+              <option value="manual">Manual Entry</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="matchNotes">Strategy / Notes / Misplays</label>
+          <textarea id="matchNotes" rows="2" placeholder="Key turns, Tera/Mega timing, speed ties, misplays..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveMatchBtn">Save Battle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Session Manager Modal -->
+  <div class="modal-backdrop" id="sessionManagerModal">
+    <div class="modal-card" style="max-width: 640px;">
+      <div class="modal-header">
+        <h3>📂 Match Sessions Manager</h3>
+        <button class="close-btn" id="closeSessionManagerBtn">&times;</button>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <p style="font-size: 13.5px; color: var(--text-muted);">
+          Organize your battle records by grinding sessions, tournament days, or climbing tiers.
+        </p>
+      </div>
+      <div class="table-container" style="max-height: 280px; margin-bottom: 20px;">
+        <table class="intel-table" id="sessionManagerTable">
+          <thead>
+            <tr>
+              <th>Session Name</th>
+              <th>Record</th>
+              <th>Win Rate</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sessionManagerBody">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px;">
+        <button type="button" class="btn btn-primary" id="modalCreateSessionBtn">+ Create New Session</button>
+        <button type="button" class="btn btn-secondary" id="doneSessionManagerBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚙️ Vision & Auto-Detection Settings</h3>
+        <button class="close-btn" id="closeSettingsBtn">&times;</button>
+      </div>
+      <form id="settingsForm">
+        <div class="form-group">
+          <label for="visionProvider">Vision Detection Engine</label>
+          <select id="visionProvider">
+            <option value="gemini">Google Gemini Flash (Recommended - 100% Free API)</option>
+            <option value="ollama">Local Ollama (100% Offline / Zero Tokens)</option>
+            <option value="disabled">Disabled (Manual / Smart Search only)</option>
+          </select>
+        </div>
+
+        <!-- Gemini Config -->
+        <div id="geminiConfigGroup" class="form-group">
+          <label for="geminiApiKey">Gemini API Key</label>
+          <input type="text" id="geminiApiKey" placeholder="AIzaSy...">
+          <div class="help-text" style="margin-top: 6px; line-height: 1.4;">
+            ✨ <strong>100% Free:</strong> Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #38bdf8;">Google AI Studio</a> (15 free requests/min with no billing required).
+          </div>
+        </div>
+
+        <!-- Ollama Config -->
+        <div id="ollamaConfigGroup" class="form-group" style="display: none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ollamaHost">Ollama Host</label>
+              <input type="text" id="ollamaHost" value="http://localhost:11434">
+            </div>
+            <div class="form-group">
+              <label for="ollamaModel">Model</label>
+              <input type="text" id="ollamaModel" value="moondream" placeholder="moondream or llava">
+            </div>
+          </div>
+          <div class="help-text">
+            Runs 100% locally on your computer with zero internet or cloud tokens required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="autoDetectOnSnap" style="width: auto;">
+            <span>Automatically run vision detection when I snap or paste a screenshot</span>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelSettingsBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "provider": "gemini",
+  "gemini_api_key": "",
+  "ollama_host": "http://localhost:11434",
+  "ollama_model": "moondream",
+  "auto_detect_on_snap": true
+}
