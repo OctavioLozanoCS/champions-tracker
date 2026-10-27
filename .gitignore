@@ -4,12 +4,13 @@ __pycache__/
 *$py.class
 *.env
 
-# Local sensitive configuration (contains Gemini API key)
+# Local sensitive configuration (protects Gemini API key from public exposure)
 data/config.json
 
-# Local SQLite databases (created automatically on first launch)
-data/*.db
+# SQLite temporary journal/write-ahead logs
 data/*.db-journal
+data/*.db-wal
+data/*.db-shm
 
 # Operating system files
 .DS_Store

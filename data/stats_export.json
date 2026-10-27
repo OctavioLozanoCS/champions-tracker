@@ -1,0 +1,1456 @@
+{
+  "sessions": [
+    {
+      "id": 4,
+      "name": "Staralamar Test",
+      "created_at": "2026-10-26 20:28:19",
+      "status": "active",
+      "regulation": "Regulation M-C",
+      "total": 13,
+      "wins": 7,
+      "losses": 6,
+      "win_rate": 53.8
+    },
+    {
+      "id": 3,
+      "name": "Rain",
+      "created_at": "2026-10-26 00:38:09",
+      "status": "archived",
+      "regulation": "Regulation M-C",
+      "total": 1,
+      "wins": 1,
+      "losses": 0,
+      "win_rate": 100.0
+    },
+    {
+      "id": 1,
+      "name": "Session 1",
+      "created_at": "2026-10-25 20:15:34",
+      "status": "archived",
+      "regulation": "Regulation M-C",
+      "total": 15,
+      "wins": 6,
+      "losses": 9,
+      "win_rate": 40.0
+    }
+  ],
+  "overall_stats": {
+    "total": 29,
+    "wins": 14,
+    "losses": 15,
+    "draws": 0,
+    "win_rate": 48.3,
+    "streak": "W1",
+    "opp_matchups": [
+      {
+        "pokemon": "Sneasler",
+        "wins": 4,
+        "losses": 4,
+        "total": 8,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Pelipper",
+        "wins": 4,
+        "losses": 1,
+        "total": 5,
+        "win_rate": 80.0
+      },
+      {
+        "pokemon": "Rillaboom",
+        "wins": 4,
+        "losses": 0,
+        "total": 4,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Milotic",
+        "wins": 2,
+        "losses": 2,
+        "total": 4,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Raichu",
+        "wins": 2,
+        "losses": 2,
+        "total": 4,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Basculegion-Male",
+        "wins": 1,
+        "losses": 3,
+        "total": 4,
+        "win_rate": 25.0
+      },
+      {
+        "pokemon": "Whimsicott",
+        "wins": 1,
+        "losses": 3,
+        "total": 4,
+        "win_rate": 25.0
+      },
+      {
+        "pokemon": "Sylveon",
+        "wins": 3,
+        "losses": 0,
+        "total": 3,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Sinistcha",
+        "wins": 2,
+        "losses": 1,
+        "total": 3,
+        "win_rate": 66.7
+      },
+      {
+        "pokemon": "Garchomp",
+        "wins": 1,
+        "losses": 2,
+        "total": 3,
+        "win_rate": 33.3
+      },
+      {
+        "pokemon": "Indeedee",
+        "wins": 1,
+        "losses": 2,
+        "total": 3,
+        "win_rate": 33.3
+      },
+      {
+        "pokemon": "Kingambit",
+        "wins": 0,
+        "losses": 3,
+        "total": 3,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Archaludon",
+        "wins": 2,
+        "losses": 0,
+        "total": 2,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Charizard",
+        "wins": 2,
+        "losses": 0,
+        "total": 2,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Incineroar",
+        "wins": 1,
+        "losses": 1,
+        "total": 2,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Venusaur",
+        "wins": 1,
+        "losses": 1,
+        "total": 2,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Torkoal",
+        "wins": 1,
+        "losses": 1,
+        "total": 2,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Hisuian Arcanine",
+        "wins": 0,
+        "losses": 2,
+        "total": 2,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Cinderace",
+        "wins": 0,
+        "losses": 2,
+        "total": 2,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Salamence",
+        "wins": 0,
+        "losses": 2,
+        "total": 2,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Blaziken",
+        "wins": 0,
+        "losses": 2,
+        "total": 2,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Golosipod",
+        "wins": 0,
+        "losses": 2,
+        "total": 2,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Mega Raichu X",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Gholdengo",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Indeedee-Female",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Toxapex",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Staraptor",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Chandelure",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Farfetchd",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Basculegion-Female",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Mega Golisopod",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Swampert",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Talonflame",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Goodra",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Sharpedo",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Ceruledge",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Scovillain",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Farigiraf",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Chestnaught",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Dondozo",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Dragapult",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Gyarados",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Rotom-Wash",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Typhlosion",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Gardevoir",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Mega Salamence",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Aggron",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Alolan Ninetales",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Delphox",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Lucario",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Volcarona",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Empoleon",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Scizor",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Araquanid",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Golisopod",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Hippowdon",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Duraludon",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Glalie",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Meowscarada",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Tauros Fire",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Hatreen",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Altaria",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Celesteela",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      }
+    ],
+    "my_performance": [
+      {
+        "pokemon": "Sinistcha",
+        "wins": 11,
+        "losses": 11,
+        "total": 22,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Sneasler",
+        "wins": 6,
+        "losses": 9,
+        "total": 15,
+        "win_rate": 40.0
+      },
+      {
+        "pokemon": "Inciniroar",
+        "wins": 7,
+        "losses": 5,
+        "total": 12,
+        "win_rate": 58.3
+      },
+      {
+        "pokemon": "Grimsnarl",
+        "wins": 6,
+        "losses": 6,
+        "total": 12,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Staraptor",
+        "wins": 5,
+        "losses": 5,
+        "total": 10,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Incineroar",
+        "wins": 3,
+        "losses": 7,
+        "total": 10,
+        "win_rate": 30.0
+      },
+      {
+        "pokemon": "Floette",
+        "wins": 4,
+        "losses": 4,
+        "total": 8,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Garchomp",
+        "wins": 3,
+        "losses": 5,
+        "total": 8,
+        "win_rate": 37.5
+      },
+      {
+        "pokemon": "Kingambit",
+        "wins": 3,
+        "losses": 5,
+        "total": 8,
+        "win_rate": 37.5
+      },
+      {
+        "pokemon": "Malamar",
+        "wins": 2,
+        "losses": 2,
+        "total": 4,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Indeedee Female",
+        "wins": 1,
+        "losses": 1,
+        "total": 2,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Peliper",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Archaludon",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Gholdengo",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Mega Raichu X",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      }
+    ],
+    "my_mega_stats": [
+      {
+        "pokemon": "Staraptor",
+        "wins": 5,
+        "losses": 4,
+        "total": 9,
+        "win_rate": 55.6
+      },
+      {
+        "pokemon": "Malamar",
+        "wins": 2,
+        "losses": 1,
+        "total": 3,
+        "win_rate": 66.7
+      }
+    ],
+    "opp_mega_stats": [
+      {
+        "pokemon": "Swampert",
+        "wins": 1,
+        "losses": 1,
+        "total": 2,
+        "win_rate": 50.0
+      },
+      {
+        "pokemon": "Delphox",
+        "wins": 0,
+        "losses": 2,
+        "total": 2,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Mega Raichu X",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Staraptor",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Mega Golisopod",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Scovillain",
+        "wins": 1,
+        "losses": 0,
+        "total": 1,
+        "win_rate": 100.0
+      },
+      {
+        "pokemon": "Mega Salamence",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      },
+      {
+        "pokemon": "Raichu",
+        "wins": 0,
+        "losses": 1,
+        "total": 1,
+        "win_rate": 0.0
+      }
+    ],
+    "formats": [
+      {
+        "format": "Ranked Doubles",
+        "wins": 14,
+        "losses": 15,
+        "total": 29,
+        "win_rate": 48.3
+      }
+    ],
+    "active_session_id": 4
+  },
+  "matches": [
+    {
+      "id": 34,
+      "created_at": "2026-10-27 00:30:29",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Mumu",
+      "my_team": [
+        "Inciniroar",
+        "Staraptor",
+        "Sinistcha",
+        "Grimsnarl"
+      ],
+      "opp_team": [
+        "Mega Raichu X",
+        "Rillaboom",
+        "Gholdengo",
+        "Incineroar"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Mega Raichu X"
+    },
+    {
+      "id": 33,
+      "created_at": "2026-10-27 00:16:13",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "",
+      "my_team": [
+        "Inciniroar",
+        "Staraptor",
+        "Sinistcha",
+        "Grimsnarl"
+      ],
+      "opp_team": [
+        "Incineroar",
+        "Mega Salamence"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Mega Salamence"
+    },
+    {
+      "id": 32,
+      "created_at": "2026-10-26 23:17:50",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "",
+      "opponent_name": "Jae",
+      "my_team": [
+        "Inciniroar",
+        "Staraptor",
+        "Grimsnarl",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Sneasler",
+        "Indeedee Female",
+        "Rillaboom",
+        "Toxapex"
+      ],
+      "score": "4-0",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": ""
+    },
+    {
+      "id": 31,
+      "created_at": "2026-10-26 22:58:22",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Haven",
+      "my_team": [
+        "Grimsnarl",
+        "Inciniroar",
+        "Sinistcha",
+        "Staraptor"
+      ],
+      "opp_team": [
+        "Aggron",
+        "Kingambit",
+        "Sinistcha"
+      ],
+      "score": "2-0",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Delphox"
+    },
+    {
+      "id": 30,
+      "created_at": "2026-10-26 22:47:38",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "3DS_Bacon",
+      "my_team": [
+        "Grimsnarl",
+        "Inciniroar",
+        "Sinistcha",
+        "Staraptor"
+      ],
+      "opp_team": [
+        "Alolan Ninetales",
+        "Milotic",
+        "Delphox"
+      ],
+      "score": "2-0",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Delphox"
+    },
+    {
+      "id": 29,
+      "created_at": "2026-10-26 22:33:57",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Supremacy GT",
+      "my_team": [
+        "Grimsnarl",
+        "Inciniroar",
+        "Sinistcha",
+        "Staraptor"
+      ],
+      "opp_team": [
+        "Sinistcha",
+        "Staraptor",
+        "Milotic"
+      ],
+      "score": "2-0",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Staraptor"
+    },
+    {
+      "id": 28,
+      "created_at": "2026-10-26 22:11:10",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "N/A",
+      "my_team": [
+        "Malamar",
+        "Grimsnarl",
+        "Inciniroar",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Chandelure",
+        "Farfetchd"
+      ],
+      "score": "1-0",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Malamar",
+      "opp_mega": ""
+    },
+    {
+      "id": 27,
+      "created_at": "2026-10-26 22:07:10",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "",
+      "opponent_name": "",
+      "my_team": [
+        "Malamar",
+        "Staraptor",
+        "Inciniroar",
+        "Grimsnarl"
+      ],
+      "opp_team": [
+        "Garchomp",
+        "Kingambit",
+        "Sneasler"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 26,
+      "created_at": "2026-10-26 21:54:11",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "",
+      "opponent_name": "Raizen",
+      "my_team": [
+        "Staraptor",
+        "Inciniroar",
+        "Grimsnarl",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Basculegion-Female",
+        "Mega Golisopod",
+        "Archaludon",
+        "Pelipper"
+      ],
+      "score": "4-1",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Mega Golisopod"
+    },
+    {
+      "id": 25,
+      "created_at": "2026-10-26 21:37:36",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "DogCheems200",
+      "my_team": [
+        "Inciniroar",
+        "Grimsnarl",
+        "Staraptor",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Lucario",
+        "Basculegion-Male",
+        "Volcarona",
+        "Hisuian Arcanine"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Swampert"
+    },
+    {
+      "id": 24,
+      "created_at": "2026-10-26 21:21:06",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Dennis",
+      "my_team": [
+        "Sinistcha",
+        "Inciniroar",
+        "Staraptor",
+        "Grimsnarl"
+      ],
+      "opp_team": [
+        "Swampert",
+        "Pelipper",
+        "Talonflame",
+        "Goodra"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Staraptor",
+      "opp_mega": "Swampert"
+    },
+    {
+      "id": 23,
+      "created_at": "2026-10-26 21:14:55",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Sunny",
+      "my_team": [
+        "Malamar",
+        "Indeedee-Female",
+        "Sinistcha",
+        "Inciniroar"
+      ],
+      "opp_team": [
+        "Sharpedo",
+        "Sylveon",
+        "Ceruledge",
+        "Scovillain"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Malamar",
+      "opp_mega": "Scovillain"
+    },
+    {
+      "id": 22,
+      "created_at": "2026-10-26 21:04:42",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "truongksp123",
+      "my_team": [
+        "Malamar",
+        "Grimsnarl",
+        "Indeedee-Female",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Cinderace",
+        "Raichu",
+        "Sneasler",
+        "Kingambit"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 4,
+      "my_mega": "Malamar",
+      "opp_mega": "Raichu"
+    },
+    {
+      "id": 21,
+      "created_at": "2026-10-26 00:47:19",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Owen",
+      "my_team": [
+        "Peliper",
+        "Archaludon",
+        "Gholdengo",
+        "Mega Raichu X"
+      ],
+      "opp_team": [
+        "Venusaur",
+        "Sylveon",
+        "Sneasler"
+      ],
+      "score": "",
+      "notes": "Gholdengo is a great pivot for incoming Close Combat from Sneasler.",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 3,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 20,
+      "created_at": "2026-10-25 23:29:21",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "\u3064\u3076\u3042\u3093",
+      "my_team": [
+        "Incineroar",
+        "Garchomp",
+        "Sneasler",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Empoleon",
+        "Salamence",
+        "Sneasler",
+        "Garchomp"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 19,
+      "created_at": "2026-10-25 23:17:52",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Liz",
+      "my_team": [
+        "Incineroar",
+        "Garchomp",
+        "Sneasler",
+        "Kingambit"
+      ],
+      "opp_team": [
+        "Torkoal",
+        "Venusaur",
+        "Basculegion M",
+        "Blaziken"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 18,
+      "created_at": "2026-10-25 23:08:42",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "BugCatchrMat",
+      "my_team": [
+        "Garchomp",
+        "Incineroar",
+        "Sneasler",
+        "Kingambit"
+      ],
+      "opp_team": [
+        "Scizor",
+        "Araquanid",
+        "Golisopod"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 17,
+      "created_at": "2026-10-25 22:57:42",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "\u3075\u304f\u3054\u308d\u3046",
+      "my_team": [
+        "Sinistcha",
+        "Sneasler",
+        "Floette",
+        "Incineroar"
+      ],
+      "opp_team": [
+        "Whimsicott",
+        "Hisuian Arcanine",
+        "Golosipod",
+        "Basculegion M"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 16,
+      "created_at": "2026-10-25 22:42:37",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "\u30bb\u30ec\u30ca",
+      "my_team": [
+        "Garchomp",
+        "Sinistcha",
+        "Sneasler",
+        "Kingambit"
+      ],
+      "opp_team": [
+        "Hippowdon",
+        "Indeedee",
+        "Cinderace"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 15,
+      "created_at": "2026-10-25 22:35:32",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "chuca99",
+      "my_team": [
+        "Floette",
+        "Sneasler",
+        "Sinistcha",
+        "Kingambit"
+      ],
+      "opp_team": [
+        "Duraludon",
+        "Pelipper",
+        "Sneasler"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 14,
+      "created_at": "2026-10-25 22:23:23",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "\u3061\u3083\u304c\u307e",
+      "my_team": [
+        "Floette",
+        "Sneasler",
+        "Incineroar",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Whimsicott",
+        "Glalie",
+        "Meowscarada",
+        "Tauros Fire"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 13,
+      "created_at": "2026-10-25 22:14:35",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "\u00f1afe",
+      "my_team": [
+        "Garchomp",
+        "Sneasler",
+        "Kingambit",
+        "Incineroar"
+      ],
+      "opp_team": [
+        "Indeedee",
+        "Hatreen",
+        "Golosipod",
+        "Altaria"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 12,
+      "created_at": "2026-10-25 22:05:24",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Mick",
+      "my_team": [
+        "Floette",
+        "Garchomp",
+        "Sneasler",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Farigiraf",
+        "Charizard",
+        "Sylveon",
+        "Sneasler"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 11,
+      "created_at": "2026-10-25 21:51:37",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "",
+      "opponent_name": "NAN",
+      "my_team": [
+        "Floette",
+        "Sneasler",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Rillaboom",
+        "Milotic",
+        "Chestnaught"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 10,
+      "created_at": "2026-10-25 21:44:56",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "alfred",
+      "my_team": [
+        "Sneasler",
+        "Incineroar",
+        "Floette",
+        "Sinistcha"
+      ],
+      "opp_team": [
+        "Pelipper",
+        "Raichu",
+        "Dondozo",
+        "Sinistcha",
+        "Basculegion M",
+        "Archaludon"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 9,
+      "created_at": "2026-10-25 21:33:51",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Rafa",
+      "my_team": [
+        "Sneasler",
+        "Incineroar",
+        "Garchomp",
+        "Kingambit"
+      ],
+      "opp_team": [
+        "Rillaboom",
+        "Charizard",
+        "Garchomp"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 8,
+      "created_at": "2026-10-25 21:28:33",
+      "result": "LOSS",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "DJ mTp",
+      "my_team": [
+        "Floette",
+        "Sinistcha",
+        "Sneasler",
+        "Incineroar"
+      ],
+      "opp_team": [
+        "Salamence",
+        "Celesteela",
+        "Milotic",
+        "Raichu",
+        "Blaziken",
+        "Whimsicott"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 7,
+      "created_at": "2026-10-25 21:07:55",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Peludittoo",
+      "my_team": [
+        "Floette",
+        "Sinistcha",
+        "Sneasler",
+        "Kingambit"
+      ],
+      "opp_team": [
+        "Dragapult",
+        "Raichu",
+        "Pelipper",
+        "Gyarados",
+        "Rotom-Wash"
+      ],
+      "score": "",
+      "notes": "",
+      "mvp": "",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    },
+    {
+      "id": 6,
+      "created_at": "2026-10-25 20:58:13",
+      "result": "WIN",
+      "format": "Ranked Doubles",
+      "tier": "Master Ball 4",
+      "opponent_name": "Voteproven",
+      "my_team": [
+        "Sneasler",
+        "Garchomp",
+        "Kingambit",
+        "Incineroar"
+      ],
+      "opp_team": [
+        "Typhlosion",
+        "Indeedee",
+        "Whimsicott",
+        "Sneasler",
+        "Torkoal",
+        "Gardevoir"
+      ],
+      "score": "",
+      "notes": "Parting Shot FTW",
+      "mvp": "Incineroar",
+      "source": "screenshot",
+      "session_id": 1,
+      "my_mega": "",
+      "opp_mega": ""
+    }
+  ]
+}
