@@ -13,6 +13,10 @@ let captureStream = null;
 let currentSavedScreenshot = null;
 let appConfig = { provider: 'gemini', gemini_api_key: '', ollama_host: 'http://localhost:11434', ollama_model: 'moondream', auto_detect_on_snap: true };
 let allPokemonNames = [];
+let currentRegulation = 'Regulation M-C';
+let availableRegulations = [];
+let selectedMyMega = '';
+let selectedOppMega = '';
 
 // Helper: Safe Event Listener
 function on(el, event, handler) {
@@ -39,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initData() {
   try { await loadConfig(); } catch (e) { console.error('Config load error:', e); }
+  try { await loadRegulations(); } catch (e) { console.error('Regulations load error:', e); }
   try { await loadSessions(); } catch (e) { console.error('Sessions load error:', e); }
   try { await loadRoster(); } catch (e) { console.error('Roster load error:', e); }
   try { await loadPokemonDatalist(); } catch (e) { console.error('Pokedex load error:', e); }
@@ -58,6 +63,7 @@ function setupEventListeners() {
   const disconnectWindowBtn = document.getElementById('disconnectWindowBtn');
 
   const sessionSelect = document.getElementById('sessionSelect');
+  const sessionRegulationSelect = document.getElementById('sessionRegulationSelect');
   const newSessionBtn = document.getElementById('newSessionBtn');
   const clearSessionBtn = document.getElementById('clearSessionBtn');
   const manageSessionsBtn = document.getElementById('manageSessionsBtn');
@@ -128,6 +134,7 @@ function setupEventListeners() {
 
   // Sessions Controls
   on(sessionSelect, 'change', handleSessionSelectChange);
+  on(sessionRegulationSelect, 'change', handleRegulationSelectChange);
   on(newSessionBtn, 'click', handleNewSession);
   on(clearSessionBtn, 'click', handleClearSession);
   on(manageSessionsBtn, 'click', openSessionManager);
@@ -316,7 +323,7 @@ async function uploadAndPreviewScreenshot(dataUrl) {
     const res = await fetch('/api/save-screenshot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: dataUrl })
+      body: JSON.stringify({ image: dataUrl, regulation: currentRegulation })
     });
 
     if (res.ok) {
@@ -351,13 +358,13 @@ async function triggerVisionAutoDetect(dataUrl) {
   const autoDetectBanner = document.getElementById('autoDetectBanner');
   const autoDetectText = document.getElementById('autoDetectText');
   if (autoDetectBanner) autoDetectBanner.style.display = 'flex';
-  if (autoDetectText) autoDetectText.textContent = '⚡ Gemini Flash scanning opponent team & trainer name...';
+  if (autoDetectText) autoDetectText.textContent = `⚡ Scanning opponent team [${currentRegulation}]...`;
 
   try {
     const res = await fetch('/api/auto-detect', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: dataUrl })
+      body: JSON.stringify({ image: dataUrl, regulation: currentRegulation })
     });
 
     const result = await res.json();
@@ -372,7 +379,12 @@ async function triggerVisionAutoDetect(dataUrl) {
         if (fmtInput) fmtInput.value = d.format;
       }
       if (d.opponent_team && Array.isArray(d.opponent_team)) {
-        selectedOppTeam = d.opponent_team;
+        selectedOppTeam = d.opponent_team.map(normalizeClientPokemonName);
+        // Auto-check for Mega in detected opponent team
+        const detectedMega = selectedOppTeam.find(p => p.toLowerCase().includes('mega') && !p.toLowerCase().includes('meganium') && !p.toLowerCase().includes('yanmega'));
+        if (detectedMega) {
+          selectedOppMega = detectedMega;
+        }
         renderOppChips();
       }
 
@@ -403,6 +415,49 @@ async function triggerVisionAutoDetect(dataUrl) {
 // -------------------------------------------------------------
 // SESSIONS MANAGEMENT
 // -------------------------------------------------------------
+// REGULATIONS & SESSIONS MANAGEMENT
+// -------------------------------------------------------------
+async function loadRegulations() {
+  try {
+    const res = await fetch('/api/regulations');
+    if (res.ok) {
+      availableRegulations = await res.json();
+      renderRegulationDropdown();
+    }
+  } catch (err) {
+    console.error('Failed to load regulations:', err);
+  }
+}
+
+function renderRegulationDropdown() {
+  const regSelect = document.getElementById('sessionRegulationSelect');
+  if (!regSelect) return;
+  regSelect.innerHTML = availableRegulations.map(r => `
+    <option value="${escapeHtml(r.id)}" ${r.id === currentRegulation ? 'selected' : ''}>
+      ${escapeHtml(r.badge)} (${escapeHtml(r.id)})
+    </option>
+  `).join('');
+}
+
+async function handleRegulationSelectChange(e) {
+  const newReg = e.target.value;
+  currentRegulation = newReg;
+  if (currentSessionId && currentSessionId !== 'all') {
+    try {
+      await fetch('/api/sessions/regulation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: currentSessionId, regulation: newReg })
+      });
+    } catch (err) {
+      console.error('Failed to update session regulation:', err);
+    }
+  }
+  await loadPokemonDatalist();
+  await loadSessions();
+}
+
+// -------------------------------------------------------------
 async function loadSessions() {
   try {
     const res = await fetch('/api/sessions');
@@ -421,6 +476,7 @@ async function loadSessions() {
 
 function renderSessionDropdown() {
   const sessionSelect = document.getElementById('sessionSelect');
+  const sessionRegulationSelect = document.getElementById('sessionRegulationSelect');
   const sessionSummaryPill = document.getElementById('sessionSummaryPill');
   const sessionHistoryBadge = document.getElementById('sessionHistoryBadge');
   const kpiRecord = document.getElementById('kpiRecord');
@@ -437,8 +493,14 @@ function renderSessionDropdown() {
 
   const curSession = allSessions.find(s => String(s.id) === String(currentSessionId));
   if (curSession) {
-    if (sessionSummaryPill) sessionSummaryPill.textContent = `${curSession.name}: ${curSession.wins}W - ${curSession.losses}L (${curSession.win_rate}%)`;
-    if (sessionHistoryBadge) sessionHistoryBadge.textContent = curSession.name;
+    if (curSession.regulation && curSession.regulation !== currentRegulation) {
+      currentRegulation = curSession.regulation;
+      renderRegulationDropdown();
+      loadPokemonDatalist();
+    }
+    const regBadge = curSession.regulation || 'All / Open';
+    if (sessionSummaryPill) sessionSummaryPill.textContent = `${curSession.name} [${regBadge}]: ${curSession.wins}W - ${curSession.losses}L (${curSession.win_rate}%)`;
+    if (sessionHistoryBadge) sessionHistoryBadge.textContent = `${curSession.name} (${regBadge})`;
   } else if (currentSessionId === 'all') {
     if (sessionSummaryPill) sessionSummaryPill.textContent = `Lifetime: ${kpiRecord ? kpiRecord.textContent : ''}`;
     if (sessionHistoryBadge) sessionHistoryBadge.textContent = 'Lifetime All Matches';
@@ -459,18 +521,43 @@ async function handleSessionSelectChange(e) {
 }
 
 async function handleNewSession() {
-  const name = prompt("Enter a name for your new session (e.g. 'Session 2', 'Master Ball Climb', 'Tournament'):");
+  const name = prompt("Enter a name for your new session (e.g. 'Session 2', 'Regulation H Grind', 'Mega League'):");
   if (!name || !name.trim()) return;
+
+  const regOptions = availableRegulations.length ? availableRegulations : [
+    { id: 'Regulation H', name: 'Regulation H (Standard Dex, No Legends, No Paradox)' },
+    { id: 'Champions / Mega', name: 'Champions League (Megas Enabled)' },
+    { id: 'Regulation G', name: 'Regulation G (1 Restricted Legendary + Paradox)' },
+    { id: 'All / Open', name: 'All / Open (Unrestricted)' }
+  ];
+
+  const regPrompt = prompt(
+    `Select Battle Regulation for "${name.trim()}":\n` +
+    regOptions.map((r, i) => `${i + 1}. ${r.name}`).join('\n') +
+    `\n\nEnter number (default: ${currentRegulation}):`,
+    "1"
+  );
+
+  let chosenReg = currentRegulation;
+  if (regPrompt) {
+    const idx = parseInt(regPrompt) - 1;
+    if (!isNaN(idx) && regOptions[idx]) {
+      chosenReg = regOptions[idx].id;
+    }
+  }
 
   try {
     const res = await fetch('/api/sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim() })
+      body: JSON.stringify({ name: name.trim(), regulation: chosenReg })
     });
     if (res.ok) {
       const data = await res.json();
       currentSessionId = data.id;
+      currentRegulation = chosenReg;
+      renderRegulationDropdown();
+      await loadPokemonDatalist();
       await loadSessions();
       closeSessionManager();
       loadData();
@@ -527,6 +614,13 @@ function renderSessionManagerTable() {
     return `
       <tr>
         <td><strong>${escapeHtml(s.name)}</strong></td>
+        <td>
+          <select style="font-size:12px; padding:3px 6px; border-radius:4px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color);" onchange="updateModalSessionRegulation(${s.id}, this.value)">
+            ${(availableRegulations.length ? availableRegulations : [{id: 'Regulation H', badge: 'Reg H'}, {id: 'Champions / Mega', badge: '⚡ Mega'}, {id: 'All / Open', badge: 'Open'}]).map(r => `
+              <option value="${escapeHtml(r.id)}" ${(s.regulation || 'All / Open') === r.id ? 'selected' : ''}>${escapeHtml(r.badge)}</option>
+            `).join('')}
+          </select>
+        </td>
         <td>${s.wins}W - ${s.losses}L</td>
         <td>${s.win_rate}%</td>
         <td>${isActive ? '<span class="badge-saved">Active</span>' : '<span style="color:var(--text-muted); font-size:12px;">Archived</span>'}</td>
@@ -538,6 +632,26 @@ function renderSessionManagerTable() {
     `;
   }).join('');
 }
+
+
+window.updateModalSessionRegulation = async function(sessionId, newReg) {
+  try {
+    await fetch('/api/sessions/regulation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: sessionId, regulation: newReg })
+    });
+    if (String(sessionId) === String(currentSessionId)) {
+      currentRegulation = newReg;
+      renderRegulationDropdown();
+      await loadPokemonDatalist();
+    }
+    await loadSessions();
+    renderSessionManagerTable();
+  } catch (err) {
+    alert('Failed to update regulation');
+  }
+};
 
 window.activateSessionFromModal = async function(id) {
   currentSessionId = id;
@@ -572,16 +686,153 @@ window.deleteSessionFromModal = async function(id) {
 };
 
 // -------------------------------------------------------------
-// Pokémon Datalist & Fast Autocomplete
+// Pokémon Datalist, Alias Normalization & Fast Autocomplete
 // -------------------------------------------------------------
+const POKEMON_ALIASES = {
+  // Pokémon Champions Regulation M-C Megas
+  'mega garchomp z': 'Mega Garchomp Z',
+  'garchomp z': 'Mega Garchomp Z',
+  'garchomp-z': 'Mega Garchomp Z',
+  'mega lucario z': 'Mega Lucario Z',
+  'lucario z': 'Mega Lucario Z',
+  'lucario-z': 'Mega Lucario Z',
+  'mega absol z': 'Mega Absol Z',
+  'absol z': 'Mega Absol Z',
+  'absol-z': 'Mega Absol Z',
+  'mega baxcalibur': 'Mega Baxcalibur',
+  'baxcalibur mega': 'Mega Baxcalibur',
+  'mega golisopod': 'Mega Golisopod',
+  'golisopod mega': 'Mega Golisopod',
+  'mega salamence': 'Mega Salamence',
+  'salamence mega': 'Mega Salamence',
+  'mega dragonite': 'Mega Dragonite',
+  'dragonite mega': 'Mega Dragonite',
+  'mega raichu x': 'Mega Raichu X',
+  'raichu mega x': 'Mega Raichu X',
+  'mega raichu y': 'Mega Raichu Y',
+  'raichu mega y': 'Mega Raichu Y',
+  'mega metagross': 'Mega Metagross',
+  'metagross mega': 'Mega Metagross',
+  'mega charizard y': 'Mega Charizard Y',
+  'mega charizard x': 'Mega Charizard X',
+  'mega aerodactyl': 'Mega Aerodactyl',
+  'mega kangaskhan': 'Mega Kangaskhan',
+  'mega gengar': 'Mega Gengar',
+  'mega venusaur': 'Mega Venusaur',
+  'mega blastoise': 'Mega Blastoise',
+  'sneasler': 'Sneasler',
+  'sneasel': 'Sneasel',
+  'sneasel-hisui': 'Hisuian Sneasel',
+  'hisuian sneasel': 'Hisuian Sneasel',
+  'basculegion': 'Basculegion',
+  'basculegion-m': 'Basculegion-Male',
+  'basculegion m': 'Basculegion-Male',
+  'basculegion male': 'Basculegion Male',
+  'basculegion-male': 'Basculegion-Male',
+  'basculegion-f': 'Basculegion-Female',
+  'basculegion f': 'Basculegion-Female',
+  'basculegion female': 'Basculegion Female',
+  'basculegion-female': 'Basculegion-Female',
+  'urshifu-r': 'Urshifu-Rapid-Strike',
+  'urshifu rapid': 'Urshifu-Rapid-Strike',
+  'urshifu rapid strike': 'Urshifu-Rapid-Strike',
+  'urshifu-rapid-strike': 'Urshifu-Rapid-Strike',
+  'urshifu-s': 'Urshifu-Single-Strike',
+  'urshifu single': 'Urshifu-Single-Strike',
+  'urshifu single strike': 'Urshifu-Single-Strike',
+  'indeedee-f': 'Indeedee-Female',
+  'indeedee female': 'Indeedee-Female',
+  'indeedee-m': 'Indeedee-Male',
+  'indeedee male': 'Indeedee-Male',
+  'bloodmoon': 'Ursaluna-Bloodmoon',
+  'bloodmoon ursaluna': 'Ursaluna-Bloodmoon',
+  'ursaluna bloodmoon': 'Ursaluna-Bloodmoon',
+  'ogerpon-w': 'Ogerpon-Wellspring',
+  'ogerpon wellspring': 'Ogerpon-Wellspring',
+  'ogerpon-h': 'Ogerpon-Hearthflame',
+  'ogerpon hearthflame': 'Ogerpon-Hearthflame',
+  'ogerpon-c': 'Ogerpon-Cornerstone',
+  'ogerpon cornerstone': 'Ogerpon-Cornerstone',
+  'ogerpon-t': 'Ogerpon-Teal',
+  'ogerpon teal': 'Ogerpon-Teal',
+  'calyrex-s': 'Calyrex-Shadow',
+  'calyrex shadow': 'Calyrex-Shadow',
+  'calyrex shadow rider': 'Calyrex-Shadow',
+  'calyrex-i': 'Calyrex-Ice',
+  'calyrex ice': 'Calyrex-Ice',
+  'calyrex ice rider': 'Calyrex-Ice',
+  'landorus-t': 'Landorus-Therian',
+  'landorus therian': 'Landorus-Therian',
+  'tornadus-t': 'Tornadus-Therian',
+  'tornadus therian': 'Tornadus-Therian',
+  'thundurus-t': 'Thundurus-Therian',
+  'thundurus therian': 'Thundurus-Therian',
+  'rotom-w': 'Rotom-Wash',
+  'rotom wash': 'Rotom-Wash',
+  'rotom-h': 'Rotom-Heat',
+  'rotom heat': 'Rotom-Heat',
+  'rotom-f': 'Rotom-Frost',
+  'rotom frost': 'Rotom-Frost',
+  'rotom-c': 'Rotom-Mow',
+  'rotom mow': 'Rotom-Mow',
+  'rotom-s': 'Rotom-Fan',
+  'rotom fan': 'Rotom-Fan',
+  'chien pao': 'Chien-Pao',
+  'ting lu': 'Ting-Lu',
+  'wo chien': 'Wo-Chien',
+  'chi yu': 'Chi-Yu',
+  'ho oh': 'Ho-Oh',
+  'porygon z': 'Porygon-Z',
+  'flutter mane': 'Flutter Mane',
+  'roaring moon': 'Roaring Moon',
+  'iron hands': 'Iron Hands',
+  'iron bundle': 'Iron Bundle'
+};
+
+function normalizeClientPokemonName(val) {
+  if (!val) return '';
+  const trimmed = val.trim();
+  const low = trimmed.toLowerCase();
+
+  // Check explicit aliases
+  if (POKEMON_ALIASES[low]) {
+    return POKEMON_ALIASES[low];
+  }
+
+  // Check exact match in allPokemonNames (case-insensitive)
+  const exact = allPokemonNames.find(p => p.toLowerCase() === low);
+  if (exact) return exact;
+
+  // Check hyphen vs space match
+  const hyphenOrSpace = allPokemonNames.find(p => 
+    p.toLowerCase().replace(/[- ]/g, '') === low.replace(/[- ]/g, '')
+  );
+  if (hyphenOrSpace) return hyphenOrSpace;
+
+  // Check single prefix match if typed >= 3 chars
+  if (low.length >= 3) {
+    const prefixMatches = allPokemonNames.filter(p => p.toLowerCase().startsWith(low));
+    if (prefixMatches.length === 1) {
+      return prefixMatches[0];
+    }
+  }
+
+  // Fallback: title-case preserving hyphens
+  return trimmed.split(/([ -])/).map(part => {
+    if (part === '-' || part === ' ' || !part) return part;
+    return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+  }).join('');
+}
+
 async function loadPokemonDatalist() {
   try {
-    const res = await fetch('/pokemon_list.json');
+    const url = `/api/regulations/pokemon?regulation=${encodeURIComponent(currentRegulation || 'All / Open')}`;
+    const res = await fetch(url);
     if (res.ok) {
       allPokemonNames = await res.json();
       const pokemonDatalist = document.getElementById('pokemonDatalist');
       if (pokemonDatalist) {
-        pokemonDatalist.innerHTML = allPokemonNames.slice(0, 300).map(p => `<option value="${escapeHtml(p)}">`).join('');
+        pokemonDatalist.innerHTML = allPokemonNames.map(p => `<option value="${escapeHtml(p)}">`).join('');
       }
     }
   } catch (e) {
@@ -594,15 +845,49 @@ function renderOppChips() {
   const oppTeamInput = document.getElementById('oppTeamInput');
 
   if (oppChips) {
-    oppChips.innerHTML = selectedOppTeam.map((p, idx) => `
-      <span class="opp-chip">
-        ${escapeHtml(p)}
-        <span class="opp-chip-remove" onclick="removeOpponentChip(${idx})">&times;</span>
-      </span>
-    `).join('');
+    oppChips.innerHTML = selectedOppTeam.map((p, idx) => {
+      const isMega = selectedOppMega === p;
+      return `
+        <span class="opp-chip ${isMega ? 'mega-selected' : ''}">
+          <span class="opp-chip-mega-btn ${isMega ? 'active' : ''}" onclick="event.stopPropagation(); setOppMega('${escapeHtml(p)}')" title="Mark as Opponent Mega Evolved">⚡</span>
+          ${escapeHtml(p)}
+          ${isMega ? '<span class="mega-badge-pill">MEGA</span>' : ''}
+          <span class="opp-chip-remove" onclick="removeOpponentChip(${idx})">&times;</span>
+        </span>
+      `;
+    }).join('');
   }
   if (oppTeamInput) oppTeamInput.value = selectedOppTeam.join(', ');
+  renderOppMegaChips();
 }
+
+function renderOppMegaChips() {
+  const row = document.getElementById('oppMegaRow');
+  const container = document.getElementById('oppMegaChips');
+  const input = document.getElementById('oppMegaInput');
+  if (!row || !container) return;
+
+  if (selectedOppTeam.length === 0) {
+    row.style.display = 'none';
+    selectedOppMega = '';
+    if (input) input.value = '';
+    return;
+  }
+
+  row.style.display = 'flex';
+  container.innerHTML = `
+    <button type="button" class="mega-chip ${!selectedOppMega ? 'active' : ''}" onclick="setOppMega('')">None</button>
+    ${selectedOppTeam.map(p => `
+      <button type="button" class="mega-chip ${selectedOppMega === p ? 'active' : ''}" onclick="setOppMega('${escapeHtml(p)}')">⚡ ${escapeHtml(p)}</button>
+    `).join('')}
+  `;
+  if (input) input.value = selectedOppMega;
+}
+
+window.setOppMega = function(name) {
+  selectedOppMega = (selectedOppMega === name) ? '' : name;
+  renderOppChips();
+};
 
 window.removeOpponentChip = function(idx) {
   selectedOppTeam.splice(idx, 1);
@@ -615,7 +900,7 @@ function addOpponentFromInput() {
   const val = oppQuickInput.value.trim();
   if (!val) return;
 
-  const formatted = val.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  const formatted = normalizeClientPokemonName(val);
 
   if (!selectedOppTeam.includes(formatted)) {
     if (selectedOppTeam.length >= 6) {
@@ -651,11 +936,48 @@ function renderRosterChips() {
   if (rosterChips) {
     rosterChips.innerHTML = currentRoster.map(p => {
       const isSelected = selectedBrought.includes(p);
-      return `<div class="roster-chip ${isSelected ? 'selected' : ''}" data-pokemon="${escapeHtml(p)}">${escapeHtml(p)}</div>`;
+      const isMega = selectedMyMega === p;
+      return `
+        <div class="roster-chip ${isSelected ? 'selected' : ''} ${isMega ? 'mega-selected' : ''}" data-pokemon="${escapeHtml(p)}">
+          ${escapeHtml(p)}
+          ${isMega ? '<span class="mega-badge-pill">⚡ MEGA</span>' : ''}
+        </div>
+      `;
     }).join('');
   }
   if (myTeamInput) myTeamInput.value = selectedBrought.join(', ');
+  renderMyMegaChips();
 }
+
+function renderMyMegaChips() {
+  const row = document.getElementById('myMegaRow');
+  const container = document.getElementById('myMegaChips');
+  const input = document.getElementById('myMegaInput');
+  if (!row || !container) return;
+
+  if (selectedBrought.length === 0) {
+    row.style.display = 'none';
+    selectedMyMega = '';
+    if (input) input.value = '';
+    return;
+  }
+
+  row.style.display = 'flex';
+  container.innerHTML = `
+    <button type="button" class="mega-chip ${!selectedMyMega ? 'active' : ''}" onclick="setMyMega('')">None</button>
+    ${selectedBrought.map(p => `
+      <button type="button" class="mega-chip ${selectedMyMega === p ? 'active' : ''}" onclick="setMyMega('${escapeHtml(p)}')">⚡ ${escapeHtml(p)}</button>
+    `).join('')}
+  `;
+  if (input) input.value = selectedMyMega;
+}
+
+window.setMyMega = function(name) {
+  selectedMyMega = (selectedMyMega === name) ? '' : name;
+  const input = document.getElementById('myMegaInput');
+  if (input) input.value = selectedMyMega;
+  renderRosterChips();
+};
 
 function handleRosterChipClick(e) {
   const chip = e.target.closest('.roster-chip');
@@ -664,9 +986,15 @@ function handleRosterChipClick(e) {
 
   if (selectedBrought.includes(pName)) {
     selectedBrought = selectedBrought.filter(p => p !== pName);
+    if (selectedMyMega === pName) {
+      selectedMyMega = '';
+    }
   } else {
     if (selectedBrought.length >= 4) {
-      selectedBrought.shift();
+      const removed = selectedBrought.shift();
+      if (selectedMyMega === removed) {
+        selectedMyMega = '';
+      }
     }
     selectedBrought.push(pName);
   }
@@ -678,7 +1006,7 @@ async function handleEditRoster() {
   const input = prompt('Enter your 6-Pokémon Roster (comma-separated):', currentStr);
   if (!input) return;
 
-  const newRoster = input.split(',').map(s => s.trim()).filter(Boolean);
+  const newRoster = input.split(',').map(s => normalizeClientPokemonName(s)).filter(Boolean);
   if (newRoster.length === 0) return;
 
   try {
@@ -934,7 +1262,10 @@ function renderMatchHistory() {
         <div>
           <div class="team-box-title">My Team:</div>
           <div>
-            ${(m.my_team || []).map(p => `<span class="pokemon-tag my">${escapeHtml(p)}</span>`).join('')}
+            ${(m.my_team || []).map(p => {
+              const isMega = m.my_mega && p === m.my_mega;
+              return `<span class="pokemon-tag my ${isMega ? 'mega-tag' : ''}">${escapeHtml(p)}${isMega ? ' <span class="mega-badge-pill">⚡ MEGA</span>' : ''}</span>`;
+            }).join('')}
           </div>
           ${m.mvp ? `<div class="match-notes-pill">⭐ MVP: <strong>${escapeHtml(m.mvp)}</strong></div>` : ''}
         </div>
@@ -942,7 +1273,10 @@ function renderMatchHistory() {
         <div>
           <div class="team-box-title">Opponent Team:</div>
           <div>
-            ${(m.opp_team || []).map(p => `<span class="pokemon-tag opp">${escapeHtml(p)}</span>`).join('')}
+            ${(m.opp_team || []).map(p => {
+              const isMega = m.opp_mega && p === m.opp_mega;
+              return `<span class="pokemon-tag opp ${isMega ? 'mega-tag' : ''}">${escapeHtml(p)}${isMega ? ' <span class="mega-badge-pill">⚡ MEGA</span>' : ''}</span>`;
+            }).join('')}
           </div>
           ${m.notes ? `<div class="match-notes-pill">📝 ${escapeHtml(m.notes)}</div>` : ''}
         </div>
@@ -973,6 +1307,10 @@ function openModal() {
     if (matchForm) matchForm.reset();
     const editMatchId = document.getElementById('editMatchId');
     if (editMatchId) editMatchId.value = '';
+    selectedMyMega = '';
+    selectedOppMega = '';
+    renderMyMegaChips();
+    renderOppMegaChips();
     if (modalScreenshotPreview) modalScreenshotPreview.style.display = 'none';
     if (autoDetectBanner) autoDetectBanner.style.display = 'none';
     selectedBrought = [];
@@ -1038,6 +1376,8 @@ async function handleFormSubmit(e) {
     score: matchScore ? matchScore.value.trim() : '',
     my_team: myTeam,
     opp_team: oppTeam,
+    my_mega: selectedMyMega,
+    opp_mega: selectedOppMega,
     mvp: matchMvp ? matchMvp.value.trim() : '',
     source: matchSource ? matchSource.value : 'manual',
     notes: matchNotes ? matchNotes.value.trim() : '',

@@ -9,9 +9,11 @@ from datetime import datetime
 
 from db import (
     init_db, add_match, get_matches, delete_match, update_match, get_stats,
-    get_sessions, create_session, set_active_session, clear_session_matches, delete_session, get_active_session_id
+    get_sessions, create_session, set_active_session, clear_session_matches, delete_session, get_active_session_id,
+    update_session_regulation
 )
 import auto_detector
+import regulations
 
 PORT = 5050
 STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
@@ -112,6 +114,15 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
             })
             return
 
+        elif path == "/api/regulations":
+            self._send_json(regulations.get_available_regulations())
+            return
+
+        elif path == "/api/regulations/pokemon":
+            reg = query.get("regulation", ["All / Open"])[0]
+            self._send_json(regulations.get_legal_pokemon_for_regulation(reg))
+            return
+
         elif path == "/api/export":
             session_id = query.get("session_id", [None])[0]
             matches = get_matches(limit=10000, session_id=session_id)
@@ -148,6 +159,8 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
                     score=data.get("score", ""),
                     notes=data.get("notes", ""),
                     mvp=data.get("mvp", ""),
+                    my_mega=data.get("my_mega", ""),
+                    opp_mega=data.get("opp_mega", ""),
                     source=data.get("source", "manual"),
                     session_id=data.get("session_id")
                 )
@@ -160,7 +173,8 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 data = self._read_json()
                 name = data.get("name", "").strip()
-                s_id = create_session(name)
+                reg = data.get("regulation", "All / Open")
+                s_id = create_session(name, regulation=reg)
                 self._send_json({"success": True, "id": s_id, "sessions": get_sessions()})
             except Exception as e:
                 self._send_json({"error": str(e)}, status=400)
@@ -172,6 +186,17 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
                 s_id = int(data.get("id"))
                 set_active_session(s_id)
                 self._send_json({"success": True, "active_id": s_id, "sessions": get_sessions()})
+            except Exception as e:
+                self._send_json({"error": str(e)}, status=400)
+            return
+
+        elif path == "/api/sessions/regulation":
+            try:
+                data = self._read_json()
+                s_id = int(data.get("id"))
+                reg = data.get("regulation", "All / Open")
+                update_session_regulation(s_id, reg)
+                self._send_json({"success": True, "sessions": get_sessions()})
             except Exception as e:
                 self._send_json({"error": str(e)}, status=400)
             return
@@ -239,6 +264,7 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 data = self._read_json()
                 img_data = data.get("image", "")
+                reg = data.get("regulation", "All / Open")
                 if "," in img_data:
                     img_data = img_data.split(",", 1)[1]
 
@@ -256,13 +282,13 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
                             "message": "Gemini API key is not configured. Enter your free API key in Settings."
                         })
                         return
-                    detected = auto_detector.detect_with_gemini(api_key, img_data)
+                    detected = auto_detector.detect_with_gemini(api_key, img_data, regulation=reg)
                     self._send_json({"success": True, "configured": True, "data": detected})
                     return
 
                 elif provider == "ollama":
                     try:
-                        detected = auto_detector.detect_with_ollama(model=ollama_model, base64_image=img_data, host=ollama_host)
+                        detected = auto_detector.detect_with_ollama(model=ollama_model, base64_image=img_data, host=ollama_host, regulation=reg)
                         self._send_json({"success": True, "configured": True, "data": detected})
                         return
                     except Exception as oe:
@@ -293,6 +319,8 @@ class TrackerHandler(http.server.SimpleHTTPRequestHandler):
                         score=item.get("score", ""),
                         notes=item.get("notes", ""),
                         mvp=item.get("mvp", ""),
+                        my_mega=item.get("my_mega", ""),
+                        opp_mega=item.get("opp_mega", ""),
                         source=item.get("source", "import"),
                         session_id=item.get("session_id"),
                         created_at=item.get("created_at")

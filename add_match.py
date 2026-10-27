@@ -14,6 +14,8 @@ def main():
     parser.add_argument("--opponent", "-p", default="", help="Opponent trainer name")
     parser.add_argument("--score", "-s", default="", help="Score/remaining Pokemon, e.g. '4-0', '2-0'")
     parser.add_argument("--mvp", default="", help="MVP Pokemon of the match")
+    parser.add_argument("--my-mega", default="", help="Your Mega Evolved Pokemon")
+    parser.add_argument("--opp-mega", default="", help="Opponent Mega Evolved Pokemon")
     parser.add_argument("--notes", "-n", default="", help="Notes / observations / misplays / key items")
     parser.add_argument("--source", default="manual", help="Source: manual or screenshot")
 
@@ -29,6 +31,8 @@ def main():
         score=args.score,
         notes=args.notes,
         mvp=args.mvp,
+        my_mega=args.my_mega,
+        opp_mega=args.opp_mega,
         source=args.source
     )
 

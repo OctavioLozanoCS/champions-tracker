@@ -2,8 +2,10 @@ import sqlite3
 import json
 import os
 from datetime import datetime
+from auto_detector import normalize_pokemon_name
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "matches.db")
+DEFAULT_REGULATION = "Regulation M-C"
 
 def get_connection():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -19,7 +21,8 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 created_at TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'active'
+                status TEXT NOT NULL DEFAULT 'active',
+                regulation TEXT NOT NULL DEFAULT 'Regulation M-C'
             )
         """)
 
@@ -38,23 +41,38 @@ def init_db():
                 notes TEXT DEFAULT '',
                 mvp TEXT DEFAULT '',
                 source TEXT DEFAULT 'manual',
-                session_id INTEGER DEFAULT 1
+                session_id INTEGER DEFAULT 1,
+                my_mega TEXT DEFAULT '',
+                opp_mega TEXT DEFAULT ''
             )
         """)
 
-        # Migration: ensure session_id column exists
+        # Migration: ensure session_id, my_mega, opp_mega columns exist in matches
         cursor = conn.cursor()
         cursor.execute("PRAGMA table_info(matches)")
         cols = [row["name"] for row in cursor.fetchall()]
         if "session_id" not in cols:
             conn.execute("ALTER TABLE matches ADD COLUMN session_id INTEGER DEFAULT 1")
+        if "my_mega" not in cols:
+            conn.execute("ALTER TABLE matches ADD COLUMN my_mega TEXT DEFAULT ''")
+        if "opp_mega" not in cols:
+            conn.execute("ALTER TABLE matches ADD COLUMN opp_mega TEXT DEFAULT ''")
+
+        # Migration: ensure regulation column exists in sessions
+        cursor.execute("PRAGMA table_info(sessions)")
+        s_cols = [row["name"] for row in cursor.fetchall()]
+        if "regulation" not in s_cols:
+            conn.execute("ALTER TABLE sessions ADD COLUMN regulation TEXT DEFAULT 'Regulation M-C'")
 
         # Ensure default session exists
         cursor.execute("SELECT COUNT(*) as cnt FROM sessions")
         if cursor.fetchone()["cnt"] == 0:
             now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            cursor.execute("INSERT INTO sessions (name, created_at, status) VALUES (?, ?, ?)", ("Session 1", now_str, "active"))
+            cursor.execute("INSERT INTO sessions (name, created_at, status, regulation) VALUES (?, ?, ?, ?)", ("Session 1", now_str, "active", DEFAULT_REGULATION))
             conn.execute("UPDATE matches SET session_id = 1 WHERE session_id IS NULL OR session_id = 0")
+        else:
+            # Upgrade any unconfigured 'All / Open' session to Regulation M-C if it's Session 1
+            cursor.execute("UPDATE sessions SET regulation = ? WHERE regulation = 'All / Open' AND name = 'Session 1'", (DEFAULT_REGULATION,))
 
         conn.commit()
 
@@ -72,7 +90,7 @@ def get_active_session_id():
             return row["id"]
         # Create one if none
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cursor.execute("INSERT INTO sessions (name, created_at, status) VALUES (?, ?, ?)", ("Session 1", now_str, "active"))
+        cursor.execute("INSERT INTO sessions (name, created_at, status, regulation) VALUES (?, ?, ?, ?)", ("Session 1", now_str, "active", DEFAULT_REGULATION))
         conn.commit()
         return cursor.lastrowid
 
@@ -93,6 +111,8 @@ def get_sessions():
         for r in rows:
             s = dict(r)
             s_id = s["id"]
+            if not s.get("regulation"):
+                s["regulation"] = DEFAULT_REGULATION
             # Get stats for this session
             cursor.execute("SELECT result, COUNT(*) as cnt FROM matches WHERE session_id = ? GROUP BY result", (s_id,))
             res_rows = cursor.fetchall()
@@ -108,16 +128,23 @@ def get_sessions():
             sessions.append(s)
         return sessions
 
-def create_session(name, set_active=True):
+def create_session(name, regulation=DEFAULT_REGULATION, set_active=True):
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with get_connection() as conn:
         cursor = conn.cursor()
         if set_active:
             conn.execute("UPDATE sessions SET status = 'archived'")
-        cursor.execute("INSERT INTO sessions (name, created_at, status) VALUES (?, ?, ?)", 
-                       (name.strip() or f"Session {datetime.now().strftime('%b %d')}", now_str, 'active' if set_active else 'archived'))
+        cursor.execute("INSERT INTO sessions (name, created_at, status, regulation) VALUES (?, ?, ?, ?)", 
+                       (name.strip() or f"Session {datetime.now().strftime('%b %d')}", now_str, 'active' if set_active else 'archived', regulation.strip() or DEFAULT_REGULATION))
         conn.commit()
         return cursor.lastrowid
+
+def update_session_regulation(session_id, regulation):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE sessions SET regulation = ? WHERE id = ?", (regulation.strip() or DEFAULT_REGULATION, session_id))
+        conn.commit()
+        return True
 
 def clear_session_matches(session_id):
     with get_connection() as conn:
@@ -141,14 +168,14 @@ def clean_team_list(team):
         try:
             parsed = json.loads(team)
             if isinstance(parsed, list):
-                return [p.strip() for p in parsed if p.strip()]
+                return [normalize_pokemon_name(str(p)) for p in parsed if str(p).strip()]
         except Exception:
-            return [p.strip() for p in team.split(",") if p.strip()]
+            return [normalize_pokemon_name(p) for p in team.split(",") if str(p).strip()]
     elif isinstance(team, list):
-        return [str(p).strip() for p in team if str(p).strip()]
+        return [normalize_pokemon_name(str(p)) for p in team if str(p).strip()]
     return []
 
-def add_match(result, my_team, opp_team, format="Ranked Doubles", tier="", opponent_name="", score="", notes="", mvp="", source="manual", session_id=None, created_at=None):
+def add_match(result, my_team, opp_team, format="Ranked Doubles", tier="", opponent_name="", score="", notes="", mvp="", source="manual", session_id=None, created_at=None, my_mega="", opp_mega=""):
     if not created_at:
         created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -158,11 +185,14 @@ def add_match(result, my_team, opp_team, format="Ranked Doubles", tier="", oppon
     my_team_clean = clean_team_list(my_team)
     opp_team_clean = clean_team_list(opp_team)
 
+    clean_my_mega = normalize_pokemon_name(my_mega) if my_mega else ""
+    clean_opp_mega = normalize_pokemon_name(opp_mega) if opp_mega else ""
+
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO matches (created_at, result, format, tier, opponent_name, my_team, opp_team, score, notes, mvp, source, session_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO matches (created_at, result, format, tier, opponent_name, my_team, opp_team, score, notes, mvp, source, session_id, my_mega, opp_mega)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             created_at,
             result.upper().strip(),
@@ -173,9 +203,11 @@ def add_match(result, my_team, opp_team, format="Ranked Doubles", tier="", oppon
             json.dumps(opp_team_clean),
             score.strip(),
             notes.strip(),
-            mvp.strip(),
+            normalize_pokemon_name(mvp) if mvp else "",
             source.strip(),
-            session_id
+            session_id,
+            clean_my_mega,
+            clean_opp_mega
         ))
         conn.commit()
         return cursor.lastrowid
@@ -209,6 +241,8 @@ def get_matches(limit=100, format_filter=None, session_id=None):
             m = dict(r)
             m["my_team"] = json.loads(m["my_team"]) if m["my_team"] else []
             m["opp_team"] = json.loads(m["opp_team"]) if m["opp_team"] else []
+            m["my_mega"] = m.get("my_mega") or ""
+            m["opp_mega"] = m.get("opp_mega") or ""
             matches.append(m)
         return matches
 
@@ -220,7 +254,7 @@ def delete_match(match_id):
         return cursor.rowcount > 0
 
 def update_match(match_id, **fields):
-    allowed = ["result", "format", "tier", "opponent_name", "my_team", "opp_team", "score", "notes", "mvp", "session_id"]
+    allowed = ["result", "format", "tier", "opponent_name", "my_team", "opp_team", "score", "notes", "mvp", "session_id", "my_mega", "opp_mega"]
     updates = []
     params = []
     for k, v in fields.items():
@@ -229,6 +263,10 @@ def update_match(match_id, **fields):
                 v = json.dumps(clean_team_list(v))
             elif k == "result":
                 v = v.upper().strip()
+            elif k == "mvp" and v:
+                v = normalize_pokemon_name(v)
+            elif k in ["my_mega", "opp_mega"] and v:
+                v = normalize_pokemon_name(v)
             updates.append(f"{k} = ?")
             params.append(v)
     if not updates:
@@ -268,7 +306,9 @@ def get_stats(format_filter=None, session_id=None):
     for m in matches:
         res = m["result"]
         for p in m["opp_team"]:
-            p_name = p.title()
+            p_name = normalize_pokemon_name(p)
+            if not p_name:
+                continue
             if p_name not in opp_pokemon_stats:
                 opp_pokemon_stats[p_name] = {"pokemon": p_name, "wins": 0, "losses": 0, "total": 0, "win_rate": 0.0}
             opp_pokemon_stats[p_name]["total"] += 1
@@ -288,7 +328,9 @@ def get_stats(format_filter=None, session_id=None):
     for m in matches:
         res = m["result"]
         for p in m["my_team"]:
-            p_name = p.title()
+            p_name = normalize_pokemon_name(p)
+            if not p_name:
+                continue
             if p_name not in my_pokemon_stats:
                 my_pokemon_stats[p_name] = {"pokemon": p_name, "wins": 0, "losses": 0, "total": 0, "win_rate": 0.0}
             my_pokemon_stats[p_name]["total"] += 1
@@ -302,6 +344,32 @@ def get_stats(format_filter=None, session_id=None):
             data["win_rate"] = round((data["wins"] / data["total"]) * 100, 1)
 
     my_performance = sorted(my_pokemon_stats.values(), key=lambda x: (x["total"], x["win_rate"]), reverse=True)
+
+    # Mega Performance Stats
+    my_mega_stats = {}
+    opp_mega_stats = {}
+    for m in matches:
+        res = m["result"]
+        if m.get("my_mega"):
+            m_poke = m["my_mega"]
+            if m_poke not in my_mega_stats:
+                my_mega_stats[m_poke] = {"pokemon": m_poke, "wins": 0, "losses": 0, "total": 0, "win_rate": 0.0}
+            my_mega_stats[m_poke]["total"] += 1
+            if res == "WIN": my_mega_stats[m_poke]["wins"] += 1
+            elif res == "LOSS": my_mega_stats[m_poke]["losses"] += 1
+
+        if m.get("opp_mega"):
+            o_poke = m["opp_mega"]
+            if o_poke not in opp_mega_stats:
+                opp_mega_stats[o_poke] = {"pokemon": o_poke, "wins": 0, "losses": 0, "total": 0, "win_rate": 0.0}
+            opp_mega_stats[o_poke]["total"] += 1
+            if res == "WIN": opp_mega_stats[o_poke]["wins"] += 1
+            elif res == "LOSS": opp_mega_stats[o_poke]["losses"] += 1
+
+    for d in my_mega_stats.values():
+        if d["total"] > 0: d["win_rate"] = round((d["wins"] / d["total"]) * 100, 1)
+    for d in opp_mega_stats.values():
+        if d["total"] > 0: d["win_rate"] = round((d["wins"] / d["total"]) * 100, 1)
 
     # Format Breakdown
     all_raw_matches = get_matches(limit=1000, session_id=session_id)
@@ -329,6 +397,8 @@ def get_stats(format_filter=None, session_id=None):
         "streak": f"{'W' if streak_type == 'WIN' else 'L' if streak_type == 'LOSS' else '-'}{streak_count}" if streak_count else "None",
         "opp_matchups": opp_matchups,
         "my_performance": my_performance,
+        "my_mega_stats": sorted(my_mega_stats.values(), key=lambda x: (x["total"], x["win_rate"]), reverse=True),
+        "opp_mega_stats": sorted(opp_mega_stats.values(), key=lambda x: (x["total"], x["win_rate"]), reverse=True),
         "formats": list(formats.values()),
         "active_session_id": get_active_session_id()
     }
